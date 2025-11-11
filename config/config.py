@@ -11,4 +11,4 @@ CONFIG = {'draw_config': {'DELAY': 3,
                   'H_IMG': 1280,
                   'THRESHOLD_VALUE': 131,
                   'W_IMG': 960},
- 'screen_config': {'H': 170, 'W': 259, 'X_A': 113, 'Y_A': 292}}
+ 'screen_config': {'H': 0, 'W': 0, 'X_A': 0, 'Y_A': 0}}

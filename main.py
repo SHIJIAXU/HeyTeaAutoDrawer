@@ -122,7 +122,8 @@ def main():
         return
 
     if config["screen_config"]["W"] <= 0:
-        print_step("启动捕获工具...")
+        print_step("检测到不存在画板信息，启动画板捕获工具")
+        input("按回车继续...")
         X_A, Y_A, W, H = capture_screen_region("config/config.py")
         config["screen_config"].update({"X_A": X_A, "Y_A": Y_A, "W": W, "H": H})
         save_config(config)
