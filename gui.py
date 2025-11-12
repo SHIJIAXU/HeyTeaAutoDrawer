@@ -128,10 +128,34 @@ class HeyTeaGUI(tk.Tk):
         log_frame = ttk.LabelFrame(left_frame, text="日志 / 提示")
         log_frame.pack(fill=tk.BOTH, expand=True, padx=6, pady=(0,6))
         self.log_text = tk.Text(log_frame, height=10, wrap=tk.WORD)
+        # Make the text widget read-only for the user; program will enable/disable when appending
+        self.log_text.configure(state=tk.DISABLED)
         self.log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         log_scroll = ttk.Scrollbar(log_frame, command=self.log_text.yview)
         log_scroll.pack(side=tk.RIGHT, fill=tk.Y)
         self.log_text['yscrollcommand'] = log_scroll.set
+
+        # Register print_utils GUI callback so console-style messages also
+        # appear inside the GUI log. Use a thread-safe proxy (after) because
+        # print_utils may call the callback from background threads.
+        try:
+            from utils import print_utils as print_utils
+
+            def _gui_log_proxy(msg: str) -> None:
+                # schedule append_log on the main thread
+                try:
+                    self.log_text.after(0, lambda m=msg: self.append_log(m))
+                except Exception:
+                    # If scheduling fails, fallback to direct append (best-effort)
+                    try:
+                        self.append_log(msg)
+                    except Exception:
+                        pass
+
+            print_utils.register_gui_logger(_gui_log_proxy)
+        except Exception:
+            # ignore registration errors; console output still works
+            pass
 
         # Right: config panel
         cfg_label = ttk.Label(right_frame, text="当前配置", font=("Arial", 12, 'bold'))
@@ -233,8 +257,16 @@ class HeyTeaGUI(tk.Tk):
         t.start()
 
     def append_log(self, text):
-        self.log_text.insert(tk.END, text + '\n')
-        self.log_text.see(tk.END)
+        # Temporarily enable the widget, insert, then disable to prevent user edits
+        try:
+            self.log_text.configure(state=tk.NORMAL)
+            self.log_text.insert(tk.END, text + '\n')
+            self.log_text.see(tk.END)
+        finally:
+            try:
+                self.log_text.configure(state=tk.DISABLED)
+            except Exception:
+                pass
 
     def _render_config_panel(self):
         # Clear
