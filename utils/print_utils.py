@@ -9,6 +9,11 @@
 def print_title(text):
     """打印标题"""
     print("\n" + "=" * 60)
+
+
+def print_title(text):
+    """打印标题"""
+    print("\n" + "=" * 60)
     print(text)
     print("=" * 60)
 
@@ -59,3 +64,4 @@ def print_countdown(seconds):
         import time
         time.sleep(1)
     print("  开始！  ")
+    
