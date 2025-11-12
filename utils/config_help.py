@@ -25,5 +25,6 @@ CONFIG_HELP = {
         "ENABLE_JITTER": "是否启用笔画抖动效果",
         "JITTER_AMOUNT": "抖动幅度（像素）",
         "JITTER_FREQUENCY": "抖动频率（笔画间隔）",
+        "SPEED_FACTOR": "绘制速度系数（越大越快）",
     }
 }

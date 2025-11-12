@@ -146,7 +146,7 @@ def main():
         if main_choice == "修改配置":
             tui_modify_config(config)
 
-        elif main_choice == "绘画":
+        elif main_choice == "开始绘画":
             tui_draw_menu(config, image_path)
 
         elif main_choice == "查看当前配置":
