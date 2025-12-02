@@ -23,6 +23,8 @@ class AutoDrawerScan:
     def run(self, image_path):
         print_step("加载图像...")
         img = cv2.imread(image_path)
+        Wcfg, Hcfg = self.image_config["W_IMG"], self.image_config["H_IMG"]
+        img = cv2.resize(img, (Wcfg, Hcfg))
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         h, w = gray.shape

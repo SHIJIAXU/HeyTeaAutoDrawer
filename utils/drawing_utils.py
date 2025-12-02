@@ -3,10 +3,13 @@
 
 import time
 
-# 仅使用 pydirectinput 库来模拟鼠标操作
-import pydirectinput
-import pydirectinput as mouse_ctrl
+# 仅使用 pyautogui 库来模拟鼠标操作
+import pyautogui
+
 from utils.print_utils import print_error, print_warning
+
+pyautogui.FAILSAFE = True 
+pyautogui.PAUSE = 0.005
 
 def to_screen_coord(x_img, y_img, image_cfg, screen_cfg):
     """
@@ -32,12 +35,12 @@ def to_screen_coord(x_img, y_img, image_cfg, screen_cfg):
     y_screen = Y_A + (y_img / H_IMG) * H
     return int(round(x_screen)), int(round(y_screen))
 def execute_drawing(path, config=None):
-    press_delay = 0.001
+    press_delay = 0.1
     if isinstance(config, dict):
         press_delay = float(config.get("draw_config", {}).get("PRESS_DELAY", press_delay))
 
-    if pydirectinput is None:
-        raise RuntimeError("execute_drawing: 无法找到 pydirectinput 库")
+    if pyautogui is None:
+        raise RuntimeError("execute_drawing: 无法找到 pyautogui 库")
 
     try:
         assert isinstance(path, list) and len(path) >= 2 and \
@@ -45,20 +48,21 @@ def execute_drawing(path, config=None):
                f"输入参数无效，path 必须是 [(x1, y1), (x2, y2), ...] 格式，但收到 {path}"
         
         x_start, y_start = path[0]
-        pydirectinput.moveTo(int(x_start), int(y_start))
+        pyautogui.moveTo(int(x_start), int(y_start))
         
-        pydirectinput.mouseDown()
+        pyautogui.mouseDown(button='left')
+        time.sleep(press_delay)
         
         for (x, y) in path[1:]:
-            pydirectinput.moveTo(int(x), int(y))
+            pyautogui.moveTo(int(x), int(y),duration=0.01)
 
 
         time.sleep(press_delay)
-        pydirectinput.mouseUp()
+        pyautogui.mouseUp(button='left')
         time.sleep(press_delay)
 
-    except pydirectinput.FailSafeException:
-        print_warning("中止：绘图操作被中断（鼠标移至屏幕角落）")
+    except pyautogui.FailSafeException:
+        print_warning("中止：绘图操作被中断")
         raise
     except Exception as e:
         print_error(f"绘制过程出错: {e}")
